@@ -1,22 +1,29 @@
 {
-  description = "Lua development environment with Neovim and LSP";
+  description = "dogg.flake";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05"; # or unstable
-    flake-utils.url = "github:numtide/flake-utils";
-  };
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-    flake-utils.lib.simpleFlake {
-      inherit self nixpkgs;
-      name = "lua-dev-env";
-      shell = { pkgs }:
-        pkgs.mkShell {
-          buildInputs = [
-            pkgs.lua5_4              # Lua itself
-            pkgs.love
-          ];
-        };
+  outputs =
+    { self, nixpkgs, ... }:
+    let
+      supportedSystems = [ "x86_64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+    in
+    {
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              lua
+              love
+            ];
+          };
+        }
+      );
     };
 }
-
