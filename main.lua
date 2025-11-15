@@ -1,6 +1,4 @@
 -- TODO Implement cards
--- TODO Implement board
--- TODO Implement players
 --
 
 local screenWidth = love.graphics.getWidth()
@@ -23,6 +21,8 @@ function love.load()
 	brett = Brett()
 
 	require "murmel"
+
+	-- TODO make player init dynamic
 
 	-- Player 1
 	table.insert(murmeln, Murmel(0.5 * screenWidth + -1 * 25, screenHeight - 15, colors[1]))
@@ -49,7 +49,9 @@ function love.load()
 	table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 3 * 25, colors[4]))
 
 	murmeln[4].pulsating = true
-	-- karten
+
+	require "karten"
+	karten = Karten()
 	-- würfel
 end
 
