@@ -3,3 +3,4 @@
 - special effects for card (sort of like in balatro)
     should these be constant for a single card (so other player can pick it up in the next round, or just a single round)
 - every player should have their own cometics, this should be represented on the game board (individual board style, individual marble style, cards etc)
+- play combo cards (meaning multiple cards in a single run)
