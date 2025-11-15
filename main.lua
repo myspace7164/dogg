@@ -6,6 +6,7 @@ local screenHeight = love.graphics.getHeight()
 
 local n_players = 4
 local murmeln = {}
+local karten  = {}
 local board = {}
 local colors = {
 	{1, 0, 0},
@@ -122,6 +123,8 @@ function love.draw()
 	for _, murmel in ipairs(murmeln) do
 		murmel:draw()
 	end
+
+	karten.karten[1]:draw()
 end
 
 function love.mousepressed(x, y)
