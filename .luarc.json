@@ -1,13 +1,11 @@
 {
   "runtime.version" : "LuaJIT",
-  "runtime.path" : [
-    "lua/?.lua",
-    "lua/?/init.lua",
-  ],
-  "diagnostics.disable" : "missing-fields",
-  "workspace.checkThirdParty" : false,
-  "workspace.library" : [
-    "$VIMRUNTIME",
-  ],
-  "workspace.userThirdParty" : "~/.local/share/LuaAddons"
+	"workspace.checkThirdParty" : "Apply",
+  "workspace.userThirdParty" : "~/.local/share/LuaAddons",
+    "runtime.special": {
+        "love.filesystem.load": "loadfile"
+    },
+    "workspace.library": [
+        "${3rd}/love2d/library"
+    ]
 }
