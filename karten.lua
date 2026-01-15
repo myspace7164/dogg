@@ -1,3 +1,4 @@
+Object = require "classic"
 Karten = Object.extend(Object)
 Karte = Object.extend(Object)
 color = { kreuz = { 0, 0, 0 }, schaufel = { 0, 0, 0 }, herz = { 1, 0, 0 }, ecke = { 1, 0, 0 } }

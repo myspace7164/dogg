@@ -1,3 +1,4 @@
+Object = require "classic"
 Brett = Object.extend(Object)
 
 local screenWidth = love.graphics.getWidth()
@@ -67,5 +68,5 @@ function Brett.draw(self)
 	for _, spielfeld in ipairs(self.spielfelder) do
 		love.graphics.setColor(spielfeld.color)
 		love.graphics.circle("line", spielfeld.x, spielfeld.y, self.radius, self.segments)
-	end 
+	end
 end
