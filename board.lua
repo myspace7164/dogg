@@ -1,5 +1,5 @@
 Object = require "classic"
-Brett = Object.extend(Object)
+Board = Object.extend(Object)
 
 local screenWidth = love.graphics.getWidth()
 local screenHeight = love.graphics.getHeight()
@@ -12,7 +12,7 @@ local function segment_to_xy(scale, rad)
 	return xc + scale * a * math.cos(math.rad(rad)), yc + scale * b * math.sin(math.rad(rad))
 end
 
-function Brett.new(self)
+function Board.new(self)
 	self.spielfelder = {}
 	self.radius = 10
 	self.segments = 100
@@ -64,7 +64,7 @@ function Brett.new(self)
 	end
 end
 
-function Brett.draw(self)
+function Board.draw(self)
 	for _, spielfeld in ipairs(self.spielfelder) do
 		love.graphics.setColor(spielfeld.color)
 		love.graphics.circle("line", spielfeld.x, spielfeld.y, self.radius, self.segments)

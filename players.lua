@@ -1,5 +1,5 @@
 Spieler = Object.extend(Object)
-Spielers = Object.extend(Object)
+Players = Object.extend(Object)
 
 function Spieler.new(self)
 	self.i_spieler = 0
@@ -7,5 +7,5 @@ function Spieler.new(self)
 	self.karten = {}
 end
 
-function Spielers.new(self)
+function Players.new(self)
 end

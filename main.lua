@@ -8,9 +8,9 @@ logger:info("screenWidth=%d, screenHeight=%d", screenWidth, screenHeight)
 
 local n_players         = 4
 local murmeln           = {}
-local karten            = {}
+local cards             = {}
 local board             = {}
-local spielers          = {}
+local players           = {}
 local colors            = {
   { 1, 0, 0 }, -- red
   { 0, 0, 1 }, -- blue
@@ -22,43 +22,54 @@ local object_dragging   = {}
 local object_going_home = {}
 
 function love.load()
-  require "brett"
-  brett = Brett()
+  logger:debug("love.load")
 
-  require "murmel"
+  require "board"
+  board = Board()
+
+  require "marble"
 
   -- TODO make player init dynamic
-  require "spieler"
-  spielers = Spielers(4)
+  require "players"
+  players = Players(4)
 
   -- Player 1
-  table.insert(murmeln, Murmel(0.5 * screenWidth + -1 * 25, screenHeight - 15, colors[1], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + -2 * 25, screenHeight - 15, colors[1], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + -3 * 25, screenHeight - 15, colors[1], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + -4 * 25, screenHeight - 15, colors[1], brett.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + -1 * 25, screenHeight - 15, colors[1], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + -2 * 25, screenHeight - 15, colors[1], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + -3 * 25, screenHeight - 15, colors[1], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + -4 * 25, screenHeight - 15, colors[1], board.spielfelder))
 
   -- Player 2
-  table.insert(murmeln, Murmel(0.5 * screenWidth + 0 * 25, 15, colors[2], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + 1 * 25, 15, colors[2], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + 2 * 25, 15, colors[2], brett.spielfelder))
-  table.insert(murmeln, Murmel(0.5 * screenWidth + 3 * 25, 15, colors[2], brett.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + 0 * 25, 15, colors[2], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + 1 * 25, 15, colors[2], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + 2 * 25, 15, colors[2], board.spielfelder))
+  table.insert(murmeln, Murmel(0.5 * screenWidth + 3 * 25, 15, colors[2], board.spielfelder))
 
   -- Player 3
-  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 1 * 25, colors[3], brett.spielfelder))
-  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 2 * 25, colors[3], brett.spielfelder))
-  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 3 * 25, colors[3], brett.spielfelder))
-  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 4 * 25, colors[3], brett.spielfelder))
+  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 1 * 25, colors[3], board.spielfelder))
+  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 2 * 25, colors[3], board.spielfelder))
+  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 3 * 25, colors[3], board.spielfelder))
+  table.insert(murmeln, Murmel(15, 0.5 * screenHeight - 4 * 25, colors[3], board.spielfelder))
 
   -- Player 4
-  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 0 * 25, colors[4], brett.spielfelder))
-  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 1 * 25, colors[4], brett.spielfelder))
-  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 2 * 25, colors[4], brett.spielfelder))
-  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 3 * 25, colors[4], brett.spielfelder))
+  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 0 * 25, colors[4], board.spielfelder))
+  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 1 * 25, colors[4], board.spielfelder))
+  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 2 * 25, colors[4], board.spielfelder))
+  table.insert(murmeln, Murmel(screenWidth - 15, 0.5 * screenHeight + 3 * 25, colors[4], board.spielfelder))
 
   murmeln[4].pulsating = true
 
-  require "karten"
-  karten = Karten()
+  require "cards"
+
+  cards = Cards()
+
+  -- three time's the charm
+  cards:shuffle()
+  cards:shuffle()
+  cards:shuffle()
+
+  cards:layoutGrid()
+
   -- würfel
 end
 
@@ -120,15 +131,45 @@ function move(obj, dt)
 end
 
 function love.draw()
-  brett:draw()
+  board:draw()
+
   for _, murmel in ipairs(murmeln) do
     murmel:draw()
   end
 
-  karten.karten[1]:draw()
+  for _, card in ipairs(cards.stack) do
+    card:draw()
+  end
+
+  local x = screenWidth - (screenWidth / 10)
+  local y = screenHeight - (screenHeight / 20)
+  local w = screenWidth / 10
+  local h = screenHeight / 20
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.rectangle("fill", x, y, w, h, 5, 5, 10)
+  love.graphics.setColor({ 0, 0, 0 })
+  love.graphics.print("Reset grid", x, y)
+
+  x = screenWidth - (2 * screenWidth / 10)
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.rectangle("fill", x, y, w, h, 5, 5, 10)
+  love.graphics.setColor({ 0, 0, 0 })
+  love.graphics.print("Shuffle", x, y)
 end
 
 function love.mousepressed(x, y)
+  if x > screenWidth - (screenWidth / 10) and y > screenHeight - (screenHeight / 20) then
+    cards:layoutGrid()
+    return
+  end
+
+  if x > screenWidth - (2 * screenWidth / 10) and y > screenHeight - (screenHeight / 20) then
+    cards:shuffle()
+    return
+  end
+
   for _, murmel in ipairs(murmeln) do
     if murmel:in_region(x, y) then
       object_dragging = murmel
@@ -136,8 +177,9 @@ function love.mousepressed(x, y)
       return
     end
   end
-  for _, karte in ipairs(karten.karten) do
-    if karte:in_region(x, y) then
+
+  for _, karte in ipairs(cards.stack) do
+    if karte:inRegion(x, y) then
       object_dragging = karte
       object_dragging.dragging = true
       return
@@ -149,5 +191,9 @@ function love.mousereleased()
   if next(object_dragging) ~= nil then
     object_dragging.dragging = false
     object_dragging.going_home = true
+    if object_dragging.lazy then
+      object_dragging.velocity = { x = 0, y = 0 }
+      object_dragging.home = object_dragging.transform
+    end
   end
 end
